@@ -13,8 +13,8 @@
 Рекомендуемая OC для сервера: Linux.<br><br>
 Сборка осуществляется этим списком команд:<br>
 ```shell
-git clone <dir>
-cd <dir>
+git clone https://github.com/aloyen07/Direct-Forwarder
+cd Direct-Forwarder
 ./gradlew build
 ```
 В папке с этим проектом, в папке `build/libs` будет находится файл с этим плагином.
