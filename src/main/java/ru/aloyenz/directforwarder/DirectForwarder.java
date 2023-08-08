@@ -9,7 +9,13 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
-import java.io.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -23,38 +29,48 @@ public class DirectForwarder {
     @Inject
     public DirectForwarder(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws IOException {
 
-        File directory = dataDirectory.toFile();
+        this.logger = logger;
+        this.server = server;
+
+        final File directory = dataDirectory.toFile();
         if (!directory.exists()) {
             directory.mkdir();
         }
 
-        File config = new File(directory.toString() + "/config.toml");
+        final File config = new File(directory + "/config.toml");
         if (!config.exists()) {
-            config.createNewFile();
-            FileWriter fileWriter = new FileWriter(config, StandardCharsets.UTF_8);
-
-            InputStream in = DirectForwarder.class.getResourceAsStream("/configuration/config.toml");
-            assert in != null;
-            Reader is = new InputStreamReader(in, StandardCharsets.UTF_8);
-
-            StringBuilder contents = new StringBuilder();
-
-            int content;
-            while ((content = is.read()) != -1) {
-                contents.append((char) content);
+            if (!config.createNewFile()) {
+                logger.error("Undable to create a new config file!");
+                return;
             }
 
-            fileWriter.write(contents.toString());
-            fileWriter.flush();
+            FileWriter fileWriter;
+            try {
+                fileWriter = new FileWriter(config, StandardCharsets.UTF_8);
+                final InputStream in = DirectForwarder.class.getResourceAsStream("/configuration/config.toml");
+                assert in != null;
+                final Reader is = new InputStreamReader(in, StandardCharsets.UTF_8);
+
+                final StringBuilder contents = new StringBuilder();
+
+                int content;
+                while ((content = is.read()) != -1) {
+                    contents.append((char) content);
+                }
+
+                fileWriter.write(contents.toString());
+                fileWriter.flush();
+            } catch (IOException exception) {
+                logger.error("Unable to write a new config file!", exception);
+                return;
+            }
         }
 
-        Toml toml = new Toml().read(config);
+        final Toml toml = new Toml().read(config);
 
         Singleton.getInstance().init(server, logger, dataDirectory,
                 toml.getString("global.domain"),
                 Integer.parseInt(toml.getString("global.port")));
-        this.logger = logger;
-        this.server = server;
 
         Singleton.getInstance().initTexts(
                 toml.getString("messages.prefix"),
@@ -69,7 +85,10 @@ public class DirectForwarder {
         logger.info("Version: " + BuildConstants.VERSION);
         logger.info("Author: " + BuildConstants.AUTHOR);
         logger.info("---------------------------------------");
-        logger.info("I will be happy if you visit my future server at the link " + BuildConstants.SITE + " or order something else on " + BuildConstants.PRODUCTS);
+        logger.info("I will be happy if you visit my future server at the link "
+                + BuildConstants.SITE
+                + " or order something else on "
+                + BuildConstants.PRODUCTS);
     }
 
     @Subscribe
