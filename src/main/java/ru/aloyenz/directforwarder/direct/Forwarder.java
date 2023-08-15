@@ -3,10 +3,10 @@ package ru.aloyenz.directforwarder.direct;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import javafx.util.Pair;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 import ru.aloyenz.directforwarder.Singleton;
+import ru.aloyenz.directforwarder.Pair;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

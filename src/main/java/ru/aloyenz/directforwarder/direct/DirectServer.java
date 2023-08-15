@@ -9,8 +9,8 @@ import java.util.Arrays;
 
 public class DirectServer {
 
-    private InetSocketAddress address;
-    private String name;
+    private final InetSocketAddress address;
+    private final String name;
 
     public DirectServer(String name, String host) throws UnknownHostException {
 

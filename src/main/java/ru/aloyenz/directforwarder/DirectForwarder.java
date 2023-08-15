@@ -9,7 +9,6 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class DirectForwarder {
             directory.mkdir();
         }
 
-        final File config = new File(directory + "/config.toml");
+        final File config = new File(directory + File.separator + "config.toml");
         if (!config.exists()) {
             if (!config.createNewFile()) {
                 logger.error("Undable to create a new config file!");
